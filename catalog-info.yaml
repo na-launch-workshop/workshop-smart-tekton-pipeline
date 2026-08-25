@@ -1,0 +1,28 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: workshop-smart-tekton-pipeline
+  title: Smart Tekton Pipeline
+  description: |
+    A Tekton pipeline with a Claude AI agent
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+#   backstage.io/techdocs-ref: dir:https://<hosted-git-repo>   # use absolute path instead to consolidate techdocs among repo forks
+#   gitlab.com/instance: ""                                    # uncomment these two gitlab.com lines to disable GitLab tabs
+#   gitlab.com/project-slug: ""                                # i.e. Issues, Pull/Merge Requests, CI in entity details
+    janus-idp.io/tekton: workshop-smart-tekton-pipeline
+  tags:
+    - springboot
+    - tekton
+    - ai-for-ide
+    - claude
+    - langchain
+# links:
+#   - url: https://<devspaces-url>/#<hosted-git-repo>
+#     title: 🚀 Launch from Dev Spaces
+#     icon: web
+spec:
+  type: module
+  lifecycle: development
+  owner: group:default/users
+  subcomponentOf: component:default/workshop-repository

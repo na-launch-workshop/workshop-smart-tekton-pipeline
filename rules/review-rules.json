@@ -1,0 +1,143 @@
+{
+  "version": "1.0",
+  "description": "Claude review rules - configure what the assistant looks for before build",
+  "rules": [
+    {
+      "id": "obvious-bugs",
+      "name": "Obvious Bugs",
+      "description": "Logic errors, off-by-one errors, null/None dereferences, infinite loops, unreachable code, wrong return types",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "secrets-leak",
+      "name": "Hardcoded Secrets",
+      "description": "Passwords, API keys, tokens, private keys, or connection strings committed in source code",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "race-conditions",
+      "name": "Concurrency Issues",
+      "description": "Race conditions, missing locks, shared mutable state without synchronization, deadlock potential",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "error-handling",
+      "name": "Error Handling Gaps",
+      "description": "Missing error handling on I/O or network calls, bare except/catch clauses, swallowed exceptions",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "code-smell",
+      "name": "Code Smells",
+      "description": "Overly complex functions, poor naming, copy-paste duplication, functions doing too many things",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "design-concerns",
+      "name": "Design Concerns",
+      "description": "Tight coupling, single-responsibility violations, concerning architectural patterns, missing abstractions",
+      "severity": "info",
+      "enabled": true
+    },
+    {
+      "id": "quick-wins",
+      "name": "Quick Wins",
+      "description": "Simple improvements for clarity, maintainability, or idiomatic usage in the language",
+      "severity": "info",
+      "enabled": true
+    },
+    {
+      "id": "injection",
+      "name": "SQL/Command Injection",
+      "description": "Unsanitized user input in SQL queries, subprocess calls, exec, eval, or template rendering",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "insecure-defaults",
+      "name": "Insecure Defaults",
+      "description": "HTTP instead of HTTPS, TLS verify disabled, overly permissive CORS, binding to 0.0.0.0, allowAll patterns",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "vulnerable-deps",
+      "name": "Vulnerable Dependencies",
+      "description": "Importing known-deprecated or insecure libraries, pinning to known-vulnerable versions",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "resource-leaks",
+      "name": "Resource Leaks",
+      "description": "Unclosed files, database connections, cursors, or sockets; missing finally/with/defer/using blocks",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "retry-timeout",
+      "name": "Retry/Timeout Gaps",
+      "description": "Network or external service calls with no timeout set, no retry logic on flaky dependencies",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "data-loss",
+      "name": "Data Loss Risk",
+      "description": "Destructive operations without confirmation, missing transactions on bulk writes, no backup before migration",
+      "severity": "block",
+      "enabled": true
+    },
+    {
+      "id": "logging-gaps",
+      "name": "Logging Gaps",
+      "description": "No logging on error paths, sensitive data in log output, missing correlation or request IDs",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "config-hygiene",
+      "name": "Config Hygiene",
+      "description": "Hardcoded URLs, ports, hostnames, or environment-specific values that should come from config or env vars",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "container-practices",
+      "name": "Container Best Practices",
+      "description": "Running as root, no health checks, missing resource limits, using latest tags, large unnecessary layers",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "test-coverage",
+      "name": "Test Coverage Gaps",
+      "description": "New public functions, endpoints, or critical paths with no corresponding tests",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "breaking-api",
+      "name": "Breaking API Changes",
+      "description": "Renamed fields, removed endpoints, changed return types or signatures without versioning or migration path",
+      "severity": "warn",
+      "enabled": true
+    },
+    {
+      "id": "temp-workarounds",
+      "name": "TODO/FIXME/HACK",
+      "description": "Temporary workarounds, TODO comments, FIXME markers, or HACK annotations that made it into a PR",
+      "severity": "info",
+      "enabled": true
+    }
+  ],
+  "thresholds": {
+    "max_block_findings": 0,
+    "max_warn_findings": 10
+  }
+}

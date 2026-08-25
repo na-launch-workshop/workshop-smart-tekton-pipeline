@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: smart-pipeline-run-
+  labels:
+    app.kubernetes.io/part-of: smart-pipeline
+spec:
+  pipelineRef:
+    name: smart-pipeline
+  params:
+    - name: git-url
+      value: "https://github.com/na-launch-workshop/smart-tekton-pipeline.git"
+    - name: git-revision
+      value: "main"
+    - name: claude-model
+      value: "claude-sonnet-5"
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
