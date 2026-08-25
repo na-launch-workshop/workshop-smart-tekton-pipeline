@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: smart-pipeline
+  labels:
+    app.kubernetes.io/part-of: smart-pipeline
+spec:
+  description: >
+    A Claude-assisted CI pipeline. Code is reviewed by Claude as a
+    first-pass personal assistant before the build runs. Claude uses
+    configurable rules from rules/review-rules.json to decide whether
+    to approve, warn, or block the build.
+
+  params:
+    - name: git-url
+      type: string
+      description: Git repository URL
+    - name: git-revision
+      type: string
+      default: "main"
+      description: Branch, tag, or SHA to build
+    - name: claude-model
+      type: string
+      default: "claude-sonnet-5"
+      description: Claude model for the review step
+
+  workspaces:
+    - name: shared-workspace
+      description: Workspace shared across all tasks
+
+  results:
+    - name: review-decision
+      description: "Claude's review decision (approve/warn/block)"
+      value: $(tasks.claude-review.results.decision)
+    - name: review-summary
+      description: "Claude's review summary"
+      value: $(tasks.claude-review.results.summary)
+
+  tasks:
+    # 1. Clone the repository
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    # 2. Claude reviews the code
+    - name: claude-review
+      taskRef:
+        name: claude-review
+      runAfter:
+        - fetch-source
+      params:
+        - name: model
+          value: $(params.claude-model)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    # 3. Build only if Claude approves or warns (not on block)
+    - name: build
+      taskRef:
+        name: build-app
+      runAfter:
+        - claude-review
+      when:
+        - input: $(tasks.claude-review.results.decision)
+          operator: in
+          values: ["approve", "warn"]
+      workspaces:
+        - name: source
+          workspace: shared-workspace

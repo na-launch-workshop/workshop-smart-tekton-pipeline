@@ -1,0 +1,9 @@
+site_name: Smart Tekton Pipeline
+site_description: A Tekton pipeline with a Claude AI agent
+
+nav:
+  - Overview: index.md
+
+plugins:
+  - techdocs-core
+

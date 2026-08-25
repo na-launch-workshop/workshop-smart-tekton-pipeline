@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-app
+  labels:
+    app.kubernetes.io/part-of: smart-pipeline
+spec:
+  description: >
+    Builds and verifies the application.
+    Replace this with your real build step (kaniko, buildah, etc).
+  workspaces:
+    - name: source
+      description: The cloned source code
+  steps:
+    - name: verify
+      image: python:3-alpine
+      script: |
+        #!/bin/sh
+        set -eu
+        echo "============================================"
+        echo "BUILD STAGE"
+        echo "============================================"
+        cd "$(workspaces.source.path)/source"
+        echo "Running application to verify it works..."
+        python -c "import app.main; print(app.main.greet())"
+        echo ""
+        echo "Build verification passed."
+        echo "============================================"
