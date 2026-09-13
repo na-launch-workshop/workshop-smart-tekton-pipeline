@@ -48,6 +48,18 @@ tkn pipelinerun logs --last -f
 
 ---
 
+## Optional: trace agent runs with LangSmith
+
+Sign up for a free account at [smith.langchain.com](https://smith.langchain.com), create a project, and get an API key. Then before running the pipeline:
+
+```bash
+export LANGCHAIN_API_KEY=ls-...
+```
+
+The script will automatically pass it into the pipeline. Open LangSmith to watch the agent's tool calls, reasoning, and token usage in real time.
+
+---
+
 ## Review rules
 
 The agent enforces rules defined in `rules/review-rules.json`. Each rule has a severity:

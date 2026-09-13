@@ -12,6 +12,16 @@ echo ""
 
 oc apply -f tekton/tasks/ -f tekton/pipeline.yaml -n "$NAMESPACE"
 
+# Build optional LangSmith env vars if set
+LANGSMITH_ENV=""
+if [ -n "${LANGCHAIN_API_KEY:-}" ]; then
+  LANGSMITH_ENV="
+        - name: LANGCHAIN_TRACING_V2
+          value: \"true\"
+        - name: LANGCHAIN_API_KEY
+          value: \"$LANGCHAIN_API_KEY\""
+fi
+
 oc create -n "$NAMESPACE" -f - <<EOF
 apiVersion: tekton.dev/v1
 kind: PipelineRun
@@ -29,6 +39,9 @@ spec:
       value: "$BRANCH"
     - name: claude-model
       value: "claude-sonnet-5"
+  taskRunTemplate:
+    podTemplate:
+      env:$LANGSMITH_ENV
   workspaces:
     - name: shared-workspace
       volumeClaimTemplate:
@@ -42,4 +55,4 @@ EOF
 
 echo ""
 echo "Pipeline triggered. Watch logs with:"
-echo "  tkn pipelinerun logs -n $NAMESPACE --last -f"
+echo "  tkn pipelinerun logs --last -f"
