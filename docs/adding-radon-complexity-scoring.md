@@ -338,7 +338,7 @@ Add the following `@tool` function alongside the other tools in the script:
 def complexity_scorer() -> str:
     """Run radon to measure cyclomatic complexity. Reports functions graded C or above."""
     r = subprocess.run(
-        ["radon", "cc", ws, "-s", "--min", "C"],
+        ["radon", "cc", WORKSPACE, "-s", "--min", "C"],
         capture_output=True, text=True, timeout=30
     )
     output = r.stdout.strip()
