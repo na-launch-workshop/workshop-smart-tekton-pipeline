@@ -41,6 +41,51 @@ def process_data(data):
     return data
 
 
+def process_user_request(username, action, role=None, audit=False):
+    result = None
+    if username:
+        if len(username) > 0:
+            user = get_user(username)
+            if user:
+                if action == "view":
+                    result = user
+                elif action == "delete":
+                    if role == "admin":
+                        result = "deleted"
+                    elif role == "superadmin":
+                        result = "force_deleted"
+                    else:
+                        result = "forbidden"
+                elif action == "update":
+                    if role:
+                        if role in ["admin", "superadmin"]:
+                            result = "updated"
+                        else:
+                            result = "forbidden"
+                    else:
+                        result = "no_role"
+                else:
+                    result = "unknown_action"
+            else:
+                if action == "create":
+                    result = "created"
+                else:
+                    result = "not_found"
+        else:
+            result = "empty_username"
+    else:
+        result = "no_username"
+
+    if audit:
+        try:
+            if result:
+                print(f"audit: {username} {action} {result}")
+        except Exception:
+            pass
+
+    return result
+
+
 def main():
     print(greet())
 
