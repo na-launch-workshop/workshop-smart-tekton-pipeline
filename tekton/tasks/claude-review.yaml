@@ -351,10 +351,10 @@ spec:
             except Exception as e:
                 print(f"WARNING: Could not parse response: {e}", file=sys.stderr)
                 print(f"Raw: {final[:500]}", file=sys.stderr)
-                write_result(DECISION_PATH, "warn")
-                write_result(SUMMARY_PATH, "Review ran but response could not be parsed")
+                write_result(DECISION_PATH, "block")
+                write_result(SUMMARY_PATH, "Review response could not be parsed — blocking as a precaution")
                 write_result(COUNT_PATH, "0")
-                return
+                sys.exit(1)
 
             decision    = apply_thresholds(review, rules)
             summary     = review.get("summary", "No summary")
