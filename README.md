@@ -12,7 +12,7 @@ A CI pipeline with an AI-assisted code review gate. Before the build runs, an AI
 
 ### 1. Fork the repo
 
-In GitLab, open the workshop repo and click **Fork**.
+In GitLab, open the workshop repo and click **Fork**. (be sure to move to your workspaace)
 
 ### 2. Unprotect the main branch
 
