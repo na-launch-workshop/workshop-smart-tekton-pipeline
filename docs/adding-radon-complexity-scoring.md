@@ -329,9 +329,9 @@ This is the image the pipeline will run in. You will see this image when the pip
 
 ---
 
-### Step 2 — Add the tool to `images/review.py`
+### Step 2 — Add the tool to `tekton/tasks/claude-review.yaml`
 
-Add the following `@tool` function alongside the other tools in `images/review.py`:
+Add the following `@tool` function alongside the other tools in the `script:` section of `claude-review.yaml`:
 
 ```python
 @tool
@@ -345,7 +345,7 @@ def complexity_scorer() -> str:
     return output if output else "All functions are within acceptable complexity (grade A or B)."
 ```
 
-Then add `complexity_scorer` to the tools list in the same file:
+Then add `complexity_scorer` to the tools list:
 
 ```python
 tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, complexity_scorer]
@@ -353,9 +353,9 @@ tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, co
 
 ---
 
-### Step 3 — Update the system prompt in `images/review.py`
+### Step 3 — Update the system prompt in `tekton/tasks/claude-review.yaml`
 
-The agent only knows about tools that are listed in the system prompt. Find the `SYSTEM_PROMPT` variable and add one line to the tools section:
+The agent only knows about tools that are listed in the system prompt. Find the `SYSTEM_PROMPT` variable in the `script:` section and add one line to the tools section:
 
 ```
 - complexity_scorer: run radon to measure cyclomatic complexity of functions

@@ -13,6 +13,4 @@ RUN pip install --no-cache-dir \
     pip-audit==2.9.0 \
     pytest==8.3.5
 
-COPY review.py /workspace/review.py
-
 WORKDIR /workspace
