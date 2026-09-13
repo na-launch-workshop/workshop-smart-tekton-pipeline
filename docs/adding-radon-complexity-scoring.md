@@ -8,16 +8,10 @@ This guide explains how to extend the AI review agent with a cyclomatic complexi
 
 Cyclomatic complexity measures how many independent paths exist through a function. Every branch — `if`, `elif`, `for`, `while`, `try`, `except`, `and`, `or` — adds 1 to the score. The base score starts at 1.
 
-Radon grades functions on a scale of A to F:
 
-| Grade | Score | Meaning |
-|---|---|---|
-| A | 1–5 | Simple, easy to test, low risk |
-| B | 6–10 | Slightly complex, acceptable |
-| C | 11–15 | Complex, consider refactoring |
-| D | 16–50 | High risk, hard to maintain |
-| F | 51+ | Untestable, rewrite strongly recommended |
 
+
+## Why is important?
 **Testability** — every branch is an independent path through the code that needs its own test case. A function with complexity 15 has up to 15 paths to cover. Most never get tested, which means bugs hide there.
 
 **Bug density** — research shows that higher complexity correlates directly with more defects per line of code. A function scoring D is statistically much more likely to contain bugs than one scoring A, even if it looks clean on the surface.
@@ -28,9 +22,18 @@ The practical effect: a grade A function takes 5 minutes to understand and test.
 
 ---
 
-## Example functions by grade
+## Scoring
+### Radon grades functions on a scale of A to F:
+| Grade | Score | Meaning |
+|---|---|---|
+| A | 1–5 | Simple, easy to test, low risk |
+| B | 6–10 | Slightly complex, acceptable |
+| C | 11–15 | Complex, consider refactoring |
+| D | 16–50 | High risk, hard to maintain |
+| F | 51+ | Untestable, rewrite strongly recommended |
 
 ---
+## Example functions by grade
 
 ### Grade A — Score 2
 
@@ -67,7 +70,7 @@ def process_payment(amount, currency, method):
 
 ---
 
-### Grade C — Score 12
+### Grade C — Score 13
 
 Moderate risk. The function is doing too many things. Consider breaking it into smaller, focused functions. The agent will flag this as a warning.
 
@@ -108,7 +111,7 @@ def validate_and_save(data, user, strict=False):
 
 ---
 
-### Grade D — Score 17
+### Grade D — Score 29
 
 High risk. Hard to test, hard to maintain, and almost impossible to fully understand without running it. Refactoring is strongly recommended. The agent will flag this and suggest splitting it up.
 
