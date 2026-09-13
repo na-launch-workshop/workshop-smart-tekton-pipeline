@@ -69,13 +69,19 @@ def validate_and_save(data, user, strict=False):
                         return "too_short"
                     elif len(data["name"]) > 100:
                         return "too_long"
+                    if "email" in data:
+                        if "@" not in data["email"]:
+                            return "invalid_email"
                 if user:
                     if user.is_active:
-                        try:
-                            db.save(data)
-                            return "saved"
-                        except Exception:
-                            return "error"
+                        if user.role in ["admin", "editor"]:
+                            try:
+                                db.save(data)
+                                return "saved"
+                            except Exception:
+                                return "error"
+                        else:
+                            return "forbidden"
                     else:
                         return "inactive_user"
                 else:
