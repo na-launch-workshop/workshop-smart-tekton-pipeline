@@ -18,6 +18,14 @@ Radon grades functions on a scale of A to F:
 | D | 16–50 | High risk, hard to maintain |
 | F | 51+ | Untestable, rewrite strongly recommended |
 
+**Testability** — every branch is an independent path through the code that needs its own test case. A function with complexity 15 has up to 15 paths to cover. Most never get tested, which means bugs hide there.
+
+**Bug density** — research shows that higher complexity correlates directly with more defects per line of code. A function scoring D is statistically much more likely to contain bugs than one scoring A, even if it looks clean on the surface.
+
+**Change risk** — when you need to modify a complex function, you can't easily predict what else you'll break. Simple functions are safe to change. Complex ones make developers afraid to touch them, so technical debt compounds over time.
+
+The practical effect: a grade A function takes 5 minutes to understand and test. A grade D function takes an afternoon — and you still might miss something.
+
 ---
 
 ## Example functions by grade
@@ -364,14 +372,3 @@ Adding this rule tells the agent that complexity has a named, intentional policy
 
 The agent decides when to call `complexity_scorer` based on what it sees in the code. It will typically call it when it notices large functions, deeply nested logic, or multiple branching conditions in the diff. It does not call it on every run — only when relevant.
 
----
-
-## Why cyclomatic complexity matters
-
-**Testability** — every branch is an independent path through the code that needs its own test case. A function with complexity 15 has up to 15 paths to cover. Most never get tested, which means bugs hide there.
-
-**Bug density** — research shows that higher complexity correlates directly with more defects per line of code. A function scoring D is statistically much more likely to contain bugs than one scoring A, even if it looks clean on the surface.
-
-**Change risk** — when you need to modify a complex function, you can't easily predict what else you'll break. Simple functions are safe to change. Complex ones make developers afraid to touch them, so technical debt compounds over time.
-
-The practical effect: a grade A function takes 5 minutes to understand and test. A grade D function takes an afternoon — and you still might miss something.
