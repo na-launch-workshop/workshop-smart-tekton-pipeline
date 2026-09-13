@@ -37,15 +37,13 @@ git push origin main
 ### 6. Run the pipeline
 
 ```bash
-bash run-pipeline.sh <your-namespace>
+bash run-pipeline.sh
 ```
-
-Replace `<your-namespace>` with the namespace your facilitator assigned to you (e.g. `user1-devspaces`).
 
 ### 7. Watch the logs
 
 ```bash
-tkn pipelinerun logs -n <your-namespace> --last -f
+tkn pipelinerun logs --last -f
 ```
 
 ---
