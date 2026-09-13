@@ -329,9 +329,9 @@ This is the image the pipeline will run in. You will see this image when the pip
 
 ---
 
-### Step 2 — Add the tool to `tekton/tasks/claude-review.yaml`
+### Step 2 — Add the tool to `images/review.py`
 
-Add the following `@tool` function alongside the other tools in the script:
+Add the following `@tool` function alongside the other tools in `images/review.py`:
 
 ```python
 @tool
@@ -345,7 +345,7 @@ def complexity_scorer() -> str:
     return output if output else "All functions are within acceptable complexity (grade A or B)."
 ```
 
-Then add `complexity_scorer` to the tools list:
+Then add `complexity_scorer` to the tools list in the same file:
 
 ```python
 tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, complexity_scorer]
@@ -353,7 +353,31 @@ tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, co
 
 ---
 
-### Step 3 — Optionally add a rule to `rules/review-rules.json`
+### Step 3 — Update the system prompt in `images/review.py`
+
+The agent only knows about tools that are listed in the system prompt. Find the `SYSTEM_PROMPT` variable and add one line to the tools section:
+
+```
+- complexity_scorer: run radon to measure cyclomatic complexity of functions
+```
+
+So it looks like:
+
+```python
+You have tools to actively investigate the code before reaching a verdict:
+- run_linter: flake8 syntax and style check
+- check_secrets: detect-secrets scan for hardcoded credentials
+- audit_dependencies: pip-audit CVE check on requirements files
+- run_tests: execute pytest and return results
+- read_file: read any file in the repo for additional context
+- complexity_scorer: run radon to measure cyclomatic complexity of functions
+```
+
+Without this, the agent won't know to call `complexity_scorer` even though it's registered.
+
+---
+
+### Step 4 — Optionally add a rule to `rules/review-rules.json`
 
 ```json
 {
