@@ -22,6 +22,10 @@ Radon grades functions on a scale of A to F:
 
 ## Example functions by grade
 
+Paste any of these into `app/main.py` and run `radon cc app/main.py -s` to see the grade.
+
+---
+
 ### Grade A — Score 2
 
 ```python
@@ -30,8 +34,6 @@ def get_user(username):
         return None
     return db.find(username)
 ```
-
-Simple — one branch, easy to reason about and test.
 
 ---
 
@@ -52,8 +54,6 @@ def process_payment(amount, currency, method):
     else:
         raise ValueError("Unknown payment method")
 ```
-
-Multiple branches but each is clear. Getting complex but manageable.
 
 ---
 
@@ -87,8 +87,6 @@ def validate_and_save(data, user, strict=False):
     else:
         return "no_data"
 ```
-
-Deeply nested. Hard to follow, hard to test every path.
 
 ---
 
@@ -136,75 +134,95 @@ def handle_request(req, user, config, retry=False):
 
 ---
 
-### Grade D (high end) — Score 30
+### Grade F — Score 51+
 
 ```python
-def process_everything(req, user, db, config, logger, retry=False, strict=False):
+def process_everything(req, user, db, config, logger,
+                       retry=False, strict=False, audit=False,
+                       tenant=None, device_id=None):
     result = None
     if req:
         if user:
             if user.is_active:
-                if user.role in ["admin", "superadmin", "editor"]:
-                    if req.method == "GET":
-                        data = db.fetch(req.resource)
-                        if data:
-                            if config.get("transform"):
-                                if config["transform"] == "json":
-                                    result = json.dumps(data)
-                                elif config["transform"] == "csv":
-                                    result = to_csv(data)
-                                elif config["transform"] == "xml":
-                                    result = to_xml(data)
+                if not user.locked:
+                    if tenant:
+                        if tenant != user.tenant:
+                            return "wrong_tenant"
+                        if not tenant.is_active:
+                            return "tenant_suspended"
+                    if device_id:
+                        if device_id not in user.trusted_devices:
+                            if user.require_device_trust:
+                                return "untrusted_device"
+                    if user.role in ["admin", "superadmin", "editor"]:
+                        if req.method == "GET":
+                            data = db.fetch(req.resource)
+                            if data:
+                                if config.get("transform"):
+                                    if config["transform"] == "json":
+                                        result = json.dumps(data)
+                                    elif config["transform"] == "csv":
+                                        result = to_csv(data)
+                                    elif config["transform"] == "xml":
+                                        result = to_xml(data)
+                                    else:
+                                        result = str(data)
                                 else:
-                                    result = str(data)
+                                    result = data
+                                if strict:
+                                    if not validate_schema(result):
+                                        result = None
                             else:
-                                result = data
-                            if strict:
-                                if not validate_schema(result):
-                                    result = None
-                        else:
-                            result = "not_found"
-                    elif req.method == "POST":
-                        try:
+                                result = "not_found"
+                        elif req.method == "POST":
+                            try:
+                                if strict:
+                                    if not validate_body(req.body):
+                                        return "invalid_body"
+                                db.insert(req.body)
+                                result = "created"
+                            except Exception as e:
+                                if retry:
+                                    try:
+                                        db.insert(req.body)
+                                        result = "created_on_retry"
+                                    except Exception:
+                                        result = "failed"
+                                else:
+                                    result = "error"
+                        elif req.method == "PUT":
                             if strict:
                                 if not validate_body(req.body):
                                     return "invalid_body"
-                            db.insert(req.body)
-                            result = "created"
-                        except Exception as e:
-                            if retry:
-                                try:
-                                    db.insert(req.body)
-                                    result = "created_on_retry"
-                                except Exception:
-                                    result = "failed"
+                            if user.role in ["admin", "superadmin"]:
+                                db.update(req.resource, req.body)
+                                result = "updated"
                             else:
-                                result = "error"
-                    elif req.method == "PUT":
-                        if strict:
-                            if not validate_body(req.body):
-                                return "invalid_body"
-                        if user.role in ["admin", "superadmin"]:
-                            db.update(req.resource, req.body)
-                            result = "updated"
+                                result = "forbidden"
+                        elif req.method == "PATCH":
+                            if req.body:
+                                if strict:
+                                    if not validate_body(req.body):
+                                        return "invalid_body"
+                                db.patch(req.resource, req.body)
+                                result = "patched"
+                            else:
+                                result = "empty_patch"
+                        elif req.method == "DELETE":
+                            if user.role == "superadmin":
+                                if strict:
+                                    if not confirm_delete(req.resource):
+                                        return "delete_not_confirmed"
+                                db.delete(req.resource)
+                                result = "deleted"
+                            else:
+                                result = "forbidden"
                         else:
-                            result = "forbidden"
-                    elif req.method == "PATCH":
-                        if req.body:
-                            db.patch(req.resource, req.body)
-                            result = "patched"
-                        else:
-                            result = "empty_patch"
-                    elif req.method == "DELETE":
-                        if user.role == "superadmin":
-                            db.delete(req.resource)
-                            result = "deleted"
-                        else:
-                            result = "forbidden"
+                            result = "method_not_allowed"
                     else:
-                        result = "method_not_allowed"
+                        result = "forbidden"
                 else:
-                    result = "forbidden"
+                    result = "account_locked"
             else:
                 result = "inactive_user"
         else:
@@ -212,25 +230,16 @@ def process_everything(req, user, db, config, logger, retry=False, strict=False)
     else:
         result = "no_request"
 
-    if logger and result:
+    if audit and result:
         try:
-            logger.info(f"{user.role} {req.method} {result}")
+            if logger:
+                logger.info(f"{user.role} {req.method} {result}")
+            else:
+                print(f"audit: {result}")
         except Exception:
             pass
 
     return result
-```
-
-Any function scoring D should be broken up. The agent will flag it and suggest splitting into smaller focused functions.
-
----
-
-### Grade F — Score 51+
-
-To reach F you need a function that handles everything — validation, authentication, session management, audit logging — all in one place. The `authenticate_user` function in `app/main.py` approaches this territory. To verify your own function's score:
-
-```bash
-radon cc app/main.py -s
 ```
 
 ---
