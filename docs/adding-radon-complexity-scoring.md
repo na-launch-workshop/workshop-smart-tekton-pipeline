@@ -15,9 +15,8 @@ Radon grades functions on a scale of A to F:
 | A | 1–5 | Simple, easy to test, low risk |
 | B | 6–10 | Slightly complex, acceptable |
 | C | 11–15 | Complex, consider refactoring |
-| D | 16–20 | High risk, hard to maintain |
-| E | 21–25 | Very high risk, hard to test |
-| F | 26+ | Untestable, rewrite strongly recommended |
+| D | 16–50 | High risk, hard to maintain |
+| F | 51+ | Untestable, rewrite strongly recommended |
 
 ---
 
@@ -137,7 +136,7 @@ def handle_request(req, user, config, retry=False):
 
 ---
 
-### Grade E/F — Score 24+
+### Grade D (high end) — Score 30
 
 ```python
 def process_everything(req, user, db, config, logger, retry=False, strict=False):
@@ -222,7 +221,7 @@ def process_everything(req, user, db, config, logger, retry=False, strict=False)
     return result
 ```
 
-If radon gives a function an F, it should be split into multiple smaller functions immediately. No amount of comments will make this maintainable.
+Any function scoring D should be broken up. The agent will flag it and suggest splitting into smaller focused functions.
 
 ---
 
