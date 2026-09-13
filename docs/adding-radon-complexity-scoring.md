@@ -99,7 +99,7 @@ def validate_and_save(data, user, strict=False):
 ### Grade D — Score 17
 
 ```python
-def handle_request(req, user, config, retry=False):
+def handle_request(req, user, config, retry=False, strict=False):
     result = None
     if req:
         if req.method == "GET":
@@ -111,16 +111,24 @@ def handle_request(req, user, config, retry=False):
                             result = json.dumps(data)
                         elif config["transform"] == "csv":
                             result = to_csv(data)
+                        elif config["transform"] == "xml":
+                            result = to_xml(data)
                         else:
                             result = str(data)
                     else:
                         result = data
+                    if strict:
+                        if not validate_schema(result):
+                            result = None
                 else:
-                    result = None
+                    result = "not_found"
             else:
                 result = "forbidden"
         elif req.method == "POST":
             if user and user.role == "admin":
+                if strict:
+                    if not validate_body(req.body):
+                        return "invalid_body"
                 try:
                     db.insert(req.body)
                     result = "created"
@@ -129,6 +137,12 @@ def handle_request(req, user, config, retry=False):
                         db.insert(req.body)
                     else:
                         result = "error"
+            else:
+                result = "forbidden"
+        elif req.method == "DELETE":
+            if user and user.role == "superadmin":
+                db.delete(req.resource)
+                result = "deleted"
             else:
                 result = "forbidden"
         else:
