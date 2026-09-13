@@ -28,6 +28,8 @@ Paste any of these into `app/main.py` and run `radon cc app/main.py -s` to see t
 
 ### Grade A — Score 2
 
+Simple, low risk. Easy to read, test, and maintain. This is the target for most functions.
+
 ```python
 def get_user(username):
     if not username:
@@ -38,6 +40,8 @@ def get_user(username):
 ---
 
 ### Grade B — Score 7
+
+Slightly complex but well structured. Acceptable — no action needed, but worth keeping an eye on as the function grows.
 
 ```python
 def process_payment(amount, currency, method):
@@ -58,6 +62,8 @@ def process_payment(amount, currency, method):
 ---
 
 ### Grade C — Score 12
+
+Moderate risk. The function is doing too many things. Consider breaking it into smaller, focused functions. The agent will flag this as a warning.
 
 ```python
 def validate_and_save(data, user, strict=False):
@@ -97,6 +103,8 @@ def validate_and_save(data, user, strict=False):
 ---
 
 ### Grade D — Score 17
+
+High risk. Hard to test, hard to maintain, and almost impossible to fully understand without running it. Refactoring is strongly recommended. The agent will flag this and suggest splitting it up.
 
 ```python
 def handle_request(req, user, config, retry=False, strict=False):
@@ -155,6 +163,8 @@ def handle_request(req, user, config, retry=False, strict=False):
 ---
 
 ### Grade F — Score 51+
+
+Untestable. This function is a liability — every bug fix risks introducing another. It should be rewritten, not refactored. No code review tool will save you here; the architecture is the problem.
 
 ```python
 def process_everything(req, user, db, config, logger,
