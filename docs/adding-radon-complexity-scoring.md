@@ -264,6 +264,31 @@ def process_everything(req, user, db, config, logger,
 
 ---
 
+## Run radon from the CLI
+
+You can run radon directly from your terminal without the pipeline:
+
+```bash
+# Install
+pip install radon
+
+# Show all functions with grades
+radon cc app/ -s
+
+# Only show functions graded C or above
+radon cc app/ -s --min C
+
+# Show a summary by file
+radon cc app/ -s --average
+
+# Get a full complexity report in JSON
+radon cc app/ -s --json
+```
+
+This is useful for quickly checking your code before triggering the pipeline.
+
+---
+
 ## How to add radon to the pipeline
 
 ### Step 1 — Add radon to `images/Dockerfile`
@@ -320,31 +345,6 @@ tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, co
   "enabled": true
 }
 ```
-
----
-
-## Run radon from the CLI
-
-You can run radon directly from your terminal without the pipeline:
-
-```bash
-# Install
-pip install radon
-
-# Show all functions with grades
-radon cc app/ -s
-
-# Only show functions graded C or above
-radon cc app/ -s --min C
-
-# Show a summary by file
-radon cc app/ -s --average
-
-# Get a full complexity report in JSON
-radon cc app/ -s --json
-```
-
-This is useful for quickly checking your code before triggering the pipeline.
 
 ---
 
