@@ -210,6 +210,31 @@ tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, co
 
 ---
 
+## Run radon from the CLI
+
+You can run radon directly from your terminal without the pipeline:
+
+```bash
+# Install
+pip install radon
+
+# Show all functions with grades
+radon cc app/ -s
+
+# Only show functions graded C or above
+radon cc app/ -s --min C
+
+# Show a summary by file
+radon cc app/ -s --average
+
+# Get a full complexity report in JSON
+radon cc app/ -s --json
+```
+
+This is useful for quickly checking your code before triggering the pipeline.
+
+---
+
 ## When the agent uses it
 
 The agent decides when to call `complexity_scorer` based on what it sees in the code. It will typically call it when it notices large functions, deeply nested logic, or multiple branching conditions in the diff. It does not call it on every run — only when relevant.
