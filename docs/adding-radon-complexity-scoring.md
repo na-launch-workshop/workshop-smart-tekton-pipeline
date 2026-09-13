@@ -356,6 +356,8 @@ tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, co
 }
 ```
 
+Adding this rule tells the agent that complexity has a named, intentional policy in your project. Without it, the agent may still flag complex functions based on what radon returns, but it won't tie the finding to a specific rule ID or know the expected severity. With it, the agent references `complexity` in its findings JSON, the output is consistent across runs, and you can disable it entirely by setting `"enabled": false` — without changing any code. Set `"severity": "block"` if you want complex functions to stop the build entirely.
+
 ---
 
 ## When the agent uses it
