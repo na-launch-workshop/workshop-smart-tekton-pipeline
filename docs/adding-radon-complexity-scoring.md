@@ -30,8 +30,6 @@ The practical effect: a grade A function takes 5 minutes to understand and test.
 
 ## Example functions by grade
 
-Paste any of these into `app/main.py` and run `radon cc app/main.py -s` to see the grade.
-
 ---
 
 ### Grade A — Score 2
