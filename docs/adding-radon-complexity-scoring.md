@@ -16,7 +16,8 @@ Radon grades functions on a scale of A to F:
 | B | 6–10 | Slightly complex, acceptable |
 | C | 11–15 | Complex, consider refactoring |
 | D | 16–20 | High risk, hard to maintain |
-| F | 21+ | Untestable, rewrite strongly recommended |
+| E | 21–25 | Very high risk, hard to test |
+| F | 26+ | Untestable, rewrite strongly recommended |
 
 ---
 
@@ -136,7 +137,7 @@ def handle_request(req, user, config, retry=False):
 
 ---
 
-### Grade F — Score 24
+### Grade E/F — Score 24+
 
 ```python
 def process_everything(req, user, db, config, logger, retry=False, strict=False):
@@ -180,6 +181,21 @@ def process_everything(req, user, db, config, logger, retry=False, strict=False)
                                     result = "failed"
                             else:
                                 result = "error"
+                    elif req.method == "PUT":
+                        if strict:
+                            if not validate_body(req.body):
+                                return "invalid_body"
+                        if user.role in ["admin", "superadmin"]:
+                            db.update(req.resource, req.body)
+                            result = "updated"
+                        else:
+                            result = "forbidden"
+                    elif req.method == "PATCH":
+                        if req.body:
+                            db.patch(req.resource, req.body)
+                            result = "patched"
+                        else:
+                            result = "empty_patch"
                     elif req.method == "DELETE":
                         if user.role == "superadmin":
                             db.delete(req.resource)
