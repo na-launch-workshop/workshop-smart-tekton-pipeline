@@ -14,15 +14,19 @@ A CI pipeline with an AI-assisted code review gate. Before the build runs, an AI
 
 In GitLab, open the workshop repo and click **Fork**.
 
-### 2. Open your fork in DevSpaces
+### 2. Unprotect the main branch
+
+In your fork go to **Settings → Repository → Protected branches**, find `main` and click **Unprotect**. This allows you to push changes directly.
+
+### 3. Open your fork in DevSpaces
 
 From the DevSpaces dashboard, create a new workspace using your fork's GitLab URL.
 
-### 3. Make some code changes
+### 4. Make some code changes
 
 Edit files in `app/main.py` or elsewhere. The agent will review whatever is in your repo.
 
-### 4. Push your changes
+### 5. Push your changes
 
 ```bash
 git add .
@@ -30,7 +34,7 @@ git commit -m "my changes"
 git push origin main
 ```
 
-### 5. Run the pipeline
+### 6. Run the pipeline
 
 ```bash
 bash run-pipeline.sh <your-namespace>
@@ -38,7 +42,7 @@ bash run-pipeline.sh <your-namespace>
 
 Replace `<your-namespace>` with the namespace your facilitator assigned to you (e.g. `user1-devspaces`).
 
-### 6. Watch the logs
+### 7. Watch the logs
 
 ```bash
 tkn pipelinerun logs -n <your-namespace> --last -f
