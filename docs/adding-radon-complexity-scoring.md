@@ -325,7 +325,7 @@ RUN pip install --no-cache-dir \
     radon==6.0.1
 ```
 
-Rebuild and push the image after this change.
+This is the image the pipeline will run in. You will see this image when the pipeline kicks off.
 
 ---
 
