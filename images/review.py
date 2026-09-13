@@ -61,7 +61,6 @@ You have tools to actively investigate the code before reaching a verdict:
 - audit_dependencies: pip-audit CVE check on requirements files
 - run_tests: execute pytest and return results
 - read_file: read any file in the repo for additional context
-- complexity_scorer: run radon to measure cyclomatic complexity of functions
 
 Use the tools that are relevant to what you see in the diff. You do not need
 to run all of them — be selective and practical.
@@ -94,15 +93,6 @@ Active rules to enforce:
 
 
 # ── tools ────────────────────────────────────────────────────────────
-
-@tool
-def complexity_scorer() -> str:
-    """Run radon to measure cyclomatic complexity of all functions."""
-    r = subprocess.run(
-        ["radon", "cc", WORKSPACE, "-s", "--min", "C"],
-        capture_output=True, text=True, timeout=30
-    )
-    return r.stdout.strip() or "All functions are within acceptable complexity (grade A or B)."
 
 @tool
 def run_linter() -> str:
@@ -294,7 +284,7 @@ def main():
     api_key = load_api_key()
 
     llm = ChatAnthropic(model=MODEL, api_key=api_key, max_tokens=4096)
-    tools = [complexity_scorer, run_linter, check_secrets, audit_dependencies, run_tests, read_file]
+    tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file]
     agent = create_react_agent(llm, tools)
 
     print(f"Starting agent ({MODEL})...")
