@@ -310,26 +310,9 @@ This is useful for quickly checking your code before triggering the pipeline.
 
 ## How to add radon to the pipeline
 
-### Step 1 — Add radon to `images/Dockerfile`
+Radon is already installed in the pipeline image — no Dockerfile changes needed.
 
-```dockerfile
-RUN pip install --no-cache-dir \
-    langchain==0.3.25 \
-    langchain-anthropic==0.3.15 \
-    langgraph==1.0.1 \
-    langgraph-prebuilt==1.0.1 \
-    flake8==7.3.0 \
-    detect-secrets==1.5.0 \
-    pip-audit==2.9.0 \
-    pytest==8.3.5 \
-    radon==6.0.1
-```
-
-This is the image the pipeline will run in. You will see this image when the pipeline kicks off.
-
----
-
-### Step 2 — Add the tool to `tekton/tasks/claude-review.yaml`
+### Step 1 — Add the tool to `tekton/tasks/claude-review.yaml`
 
 Add the following `@tool` function alongside the other tools in the `script:` section of `claude-review.yaml`:
 
@@ -353,7 +336,7 @@ tools = [complexity_scorer, run_linter, check_secrets, audit_dependencies, run_t
 
 ---
 
-### Step 3 — Update the system prompt in `tekton/tasks/claude-review.yaml`
+### Step 2 — Update the system prompt in `tekton/tasks/claude-review.yaml`
 
 The agent only knows about tools listed in the system prompt, and will only call them if instructed. Find the `SYSTEM_PROMPT` variable in the `script:` section and replace the tools section with the following — putting `complexity_scorer` first and adding the mandate to always run it:
 
@@ -377,7 +360,7 @@ Without listing `complexity_scorer` first and mandating it runs, the agent will 
 
 ---
 
-### Step 4 — Optionally add a rule to `rules/review-rules.json`
+### Step 3 — Optionally add a rule to `rules/review-rules.json`
 
 ```json
 {
