@@ -136,18 +136,77 @@ def handle_request(req, user, config, retry=False):
 
 ---
 
-### Grade F — Score 23+
-
-A grade F function is typically one that tries to do everything — authentication, validation, database access, transformation, logging, and error handling all in one place, with deeply nested conditions and multiple loops.
+### Grade F — Score 24
 
 ```python
 def process_everything(req, user, db, config, logger, retry=False, strict=False):
-    # ... 60+ lines of deeply nested branches, loops within loops,
-    # multiple try/except blocks, and conditional returns scattered throughout
-    pass
+    result = None
+    if req:
+        if user:
+            if user.is_active:
+                if user.role in ["admin", "superadmin", "editor"]:
+                    if req.method == "GET":
+                        data = db.fetch(req.resource)
+                        if data:
+                            if config.get("transform"):
+                                if config["transform"] == "json":
+                                    result = json.dumps(data)
+                                elif config["transform"] == "csv":
+                                    result = to_csv(data)
+                                elif config["transform"] == "xml":
+                                    result = to_xml(data)
+                                else:
+                                    result = str(data)
+                            else:
+                                result = data
+                            if strict:
+                                if not validate_schema(result):
+                                    result = None
+                        else:
+                            result = "not_found"
+                    elif req.method == "POST":
+                        try:
+                            if strict:
+                                if not validate_body(req.body):
+                                    return "invalid_body"
+                            db.insert(req.body)
+                            result = "created"
+                        except Exception as e:
+                            if retry:
+                                try:
+                                    db.insert(req.body)
+                                    result = "created_on_retry"
+                                except Exception:
+                                    result = "failed"
+                            else:
+                                result = "error"
+                    elif req.method == "DELETE":
+                        if user.role == "superadmin":
+                            db.delete(req.resource)
+                            result = "deleted"
+                        else:
+                            result = "forbidden"
+                    else:
+                        result = "method_not_allowed"
+                else:
+                    result = "forbidden"
+            else:
+                result = "inactive_user"
+        else:
+            result = "no_user"
+    else:
+        result = "no_request"
+
+    if logger and result:
+        try:
+            logger.info(f"{user.role} {req.method} {result}")
+        except Exception:
+            pass
+
+    return result
 ```
 
-If radon gives a function an F, it should be split into multiple smaller functions immediately.
+If radon gives a function an F, it should be split into multiple smaller functions immediately. No amount of comments will make this maintainable.
 
 ---
 
