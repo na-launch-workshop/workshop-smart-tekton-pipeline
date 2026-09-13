@@ -225,6 +225,16 @@ Any function scoring D should be broken up. The agent will flag it and suggest s
 
 ---
 
+### Grade F — Score 51+
+
+To reach F you need a function that handles everything — validation, authentication, session management, audit logging — all in one place. The `authenticate_user` function in `app/main.py` approaches this territory. To verify your own function's score:
+
+```bash
+radon cc app/main.py -s
+```
+
+---
+
 ## How to add radon to the pipeline
 
 ### Step 1 — Add radon to `images/Dockerfile`
