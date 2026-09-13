@@ -348,32 +348,32 @@ def complexity_scorer() -> str:
 Then add `complexity_scorer` to the tools list:
 
 ```python
-tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file, complexity_scorer]
+tools = [complexity_scorer, run_linter, check_secrets, audit_dependencies, run_tests, read_file]
 ```
 
 ---
 
 ### Step 3 — Update the system prompt in `tekton/tasks/claude-review.yaml`
 
-The agent only knows about tools that are listed in the system prompt. Find the `SYSTEM_PROMPT` variable in the `script:` section and add one line to the tools section:
-
-```
-- complexity_scorer: run radon to measure cyclomatic complexity of functions
-```
-
-So it looks like:
+The agent only knows about tools listed in the system prompt, and will only call them if instructed. Find the `SYSTEM_PROMPT` variable in the `script:` section and replace the tools section with the following — putting `complexity_scorer` first and adding the mandate to always run it:
 
 ```python
-You have tools to actively investigate the code before reaching a verdict:
-- run_linter: flake8 syntax and style check
-- check_secrets: detect-secrets scan for hardcoded credentials
-- audit_dependencies: pip-audit CVE check on requirements files
-- run_tests: execute pytest and return results
-- read_file: read any file in the repo for additional context
-- complexity_scorer: run radon to measure cyclomatic complexity of functions
+        SYSTEM_PROMPT = """\
+        You are a code review agent in a CI/CD pipeline acting as a senior developer.
+
+        You have tools to actively investigate the code before reaching a verdict:
+        - complexity_scorer: run radon to measure cyclomatic complexity of functions
+        - run_linter: flake8 syntax and style check
+        - check_secrets: detect-secrets scan for hardcoded credentials
+        - audit_dependencies: pip-audit CVE check on requirements files
+        - run_tests: execute pytest and return results
+        - read_file: read any file in the repo for additional context
+
+        Always run complexity_scorer first on every review. Then use other tools
+        as relevant to what you see in the code.
 ```
 
-Without this, the agent won't know to call `complexity_scorer` even though it's registered.
+Without listing `complexity_scorer` first and mandating it runs, the agent will skip it when it finds other blocking issues to flag.
 
 ---
 
