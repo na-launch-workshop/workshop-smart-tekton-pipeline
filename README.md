@@ -1,4 +1,4 @@
-# Smart Tekton Pipeline
+# 🚀 Module: Smart Tekton Pipeline
 
 A CI pipeline with an AI-assisted code review gate. Before the build runs, an AI agent reviews your code using real tools — linter, secrets scanner, dependency auditor, and test runner — and decides whether to approve, warn, or block the build.
 
