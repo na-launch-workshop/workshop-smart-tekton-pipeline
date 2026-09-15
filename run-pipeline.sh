@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-NAMESPACE=${1:-$(oc whoami 2>/dev/null)-build}
+CURRENT_NS=$(oc config view --minify -o jsonpath='{.contexts[0].context.namespace}' 2>/dev/null)
+USERNAME=$(echo "$CURRENT_NS" | sed 's/-devspaces$\|-build$\|-dev$\|-prod$\|-showroom$//')
+NAMESPACE=${1:-${USERNAME}-build}
 REPO=$(git remote get-url origin)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
