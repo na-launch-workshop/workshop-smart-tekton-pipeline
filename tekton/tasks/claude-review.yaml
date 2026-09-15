@@ -54,7 +54,7 @@ spec:
         from langchain_core.tools import tool
         from langgraph.prebuilt import create_react_agent
 
-        VAULT_ADDR  = os.environ.get("VAULT_ADDR", "https://vault-vault.apps.cluster-x7f6f.dyn.redhatworkshops.io")
+        VAULT_ADDR  = os.environ.get("VAULT_ADDR", "https://vault-vault.apps.cluster-wnh5t.dyn.redhatworkshops.io")
         VAULT_ROLE  = os.environ.get("VAULT_ROLE", "smart-pipeline-role")
         VAULT_PATH  = os.environ.get("VAULT_PATH", "kv/data/secrets/common/anthropic")
         SA_JWT_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token"
