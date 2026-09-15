@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE=${1:-$(oc config view --minify -o jsonpath='{.contexts[0].context.namespace}' 2>/dev/null | sed 's/-devspaces$\|-build$\|-dev$\|-prod$\|-showroom$//')-build}
+NAMESPACE=${1:-$(oc whoami 2>/dev/null | cut -d: -f3 | sed 's/-devspaces$//')-build}
 REPO=$(git remote get-url origin)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
