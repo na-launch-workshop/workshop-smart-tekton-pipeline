@@ -12,20 +12,14 @@ echo ""
 
 oc apply -f tekton/tasks/ -f tekton/pipeline.yaml -n "$NAMESPACE"
 
-# If LANGCHAIN_API_KEY is set, create/update a secret and reference it
+# If LANGCHAIN_API_KEY is set, inject it directly into the pipeline pods
 LANGSMITH_ENV=""
 if [ -n "${LANGCHAIN_API_KEY:-}" ]; then
-  oc create secret generic langsmith-api-key \
-    --from-literal=api-key="$LANGCHAIN_API_KEY" \
-    -n "$NAMESPACE" --dry-run=client -o yaml | oc apply -f - -n "$NAMESPACE" > /dev/null
   LANGSMITH_ENV="
         - name: LANGCHAIN_TRACING_V2
           value: \"true\"
         - name: LANGCHAIN_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: langsmith-api-key
-              key: api-key"
+          value: \"$LANGCHAIN_API_KEY\""
 fi
 
 oc create -n "$NAMESPACE" -f - <<EOF
