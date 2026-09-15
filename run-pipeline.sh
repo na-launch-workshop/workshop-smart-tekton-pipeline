@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE=${1:-$(oc whoami)-build}
+NAMESPACE=${1:-$(oc whoami 2>/dev/null)-build}
 REPO=$(git remote get-url origin)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
