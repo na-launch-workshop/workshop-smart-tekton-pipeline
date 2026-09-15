@@ -69,7 +69,8 @@ spec:
         COUNT_PATH    = "$(results.findings-count.path)"
 
         IGNORED_DIRS = {'.git', 'node_modules', '__pycache__', '.venv',
-                        'vendor', '.tox', '.mypy_cache', 'dist', 'build'}
+                        'vendor', '.tox', '.mypy_cache', 'dist', 'build',
+                        'tekton', 'docs', 'rules'}
         CODE_EXTENSIONS = {'.py', '.go', '.js', '.ts', '.jsx', '.tsx', '.java',
                            '.rb', '.rs', '.c', '.cpp', '.h', '.cs', '.sh',
                            '.yaml', '.yml', '.json', '.tf', '.hcl', '.sql'}
@@ -327,7 +328,7 @@ spec:
 
             api_key = load_api_key()
 
-            llm = ChatAnthropic(model=MODEL, api_key=api_key, max_tokens=4096)
+            llm = ChatAnthropic(model=MODEL, api_key=api_key, max_tokens=8192)
             tools = [run_linter, check_secrets, audit_dependencies, run_tests, read_file]
             agent = create_react_agent(llm, tools)
 
