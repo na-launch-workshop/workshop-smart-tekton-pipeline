@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-NAMESPACE=${1:-$(oc project -q 2>/dev/null)}
+NAMESPACE=${1:-$(oc whoami)-build}
 REPO=$(git remote get-url origin)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
@@ -61,4 +61,4 @@ EOF
 
 echo ""
 echo "Pipeline triggered. Watch logs with:"
-echo "  tkn pipelinerun logs --last -f"
+echo "  tkn pipelinerun logs -n $NAMESPACE --last -f"
